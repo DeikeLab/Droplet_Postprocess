@@ -1,3 +1,4 @@
+% Write Excel output from matrix data
 function output_xlsx(break_bool,break_time,tend,wel,mul,tl,Folder_sufs,i_folder,Output_File)
     we_list = myreshape(wel);
     mu_list = myreshape(mul);
