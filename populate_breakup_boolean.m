@@ -1,24 +1,24 @@
 % To calculate the break-up time
 % Break-up criterion: produce a droplet larger than 4dx^3 or 8dx^3
-% Problem solved: inconsistency between break-up time and diameter tree
-
 
 %Data structure in every dat file
 %Computational step// Physical time// Droplet id// 
 %Droplet volume//  Mass center position x,y,z//  Droplet area//
 %Note that there is no order in the subdroplets 
+
+
 % clear;
 function populate_breakup_boolean(i_folder,Folder_sufs,wes,mus,ts)
-    %% small one line functions
+    %% small one line function for filename
     Filename = @(we,mu,t) sprintf('We_%g_Mu_%g_t_%g*.dat',we,mu,t);
+
     %% Test mode
     Test_mode = 0; % 1 -- Run the simulation for a single case 0 -- Loop for all cases
     
     %% Folder that we are working on
-%     i_folder =5 ;
-%     Folder_sufs = {'Re38L9','Re55L8','Re55L9','Re77L8','Re77L9','150','150L9'};
     Folder = Foldername(i_folder, Folder_sufs);
     Output_File = append(Folder_sufs{i_folder},'.xlsx');
+    disp(Folder)
     %% Physical parameter
     epsilon = 10;   %turbulence dissipation rate
     rho =1;     %density ratio 
@@ -39,16 +39,10 @@ function populate_breakup_boolean(i_folder,Folder_sufs,wes,mus,ts)
     Vc = dxc^3 * pi /6.0; %volume of sphere of dia of 4 grid spacing
     
     
-    %% Parameter space (must be provided as 
-    %% argument of function to deal with missing files)
-%     wes = [3,4,5,6,7,8,9,10];
-%     mus = [0.01,0.1,1,10,50,100,150];
-%     ts = [80,90,100,110,120,130,140,150,160,170];
-    
     %% Loop index
     if Test_mode == 1
-        i_index = 1; %we=3
-        j_index = 2; %mu=0.1
+        i_index = 5; %we=3
+        j_index = 5; %mu=0.1
         k_index = 1; %t=80    
     else
         i_index = 1:length(wes);
@@ -60,10 +54,11 @@ function populate_breakup_boolean(i_folder,Folder_sufs,wes,mus,ts)
     i_num = length(i_index); j_num=length(j_index); k_num=length(k_index);
     tend = zeros(i_num, j_num, k_num); %The end time of the simulation
     break_bool = tend; %the break up boolean
-    break_time = tend; %tje break up time
+    break_time = tend; %the break up time
     wel = tend; mul = tend; tl = tend;
     
     %% Do the loop
+    %% Case info
     for i = i_index
         for j = j_index
             for k = k_index
@@ -111,9 +106,10 @@ function populate_breakup_boolean(i_folder,Folder_sufs,wes,mus,ts)
 
     output_xlsx(break_bool,break_time,tend,wel,mul,tl,Folder_sufs,i_folder,Output_File)
 
+    %% Statistics info
     break_bool_probability = mean(break_bool,3);
     [mugrid, wegrid] = meshgrid(mus,wes);
-%     clf
+    % clf
     % contourf(mugrid,wegrid,break_bool_probability,'EdgeColor','none');
     % colormap cool;
     % c = colorbar;
