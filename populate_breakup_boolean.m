@@ -19,8 +19,10 @@ function populate_breakup_boolean(i_folder,Folder_sufs,wes,mus,ts)
     
     %% Folder that we are working on
     Folder = Foldername(i_folder, Folder_sufs);
-    Output_File = append('./Data/',Folder_sufs{i_folder},'.xlsx');
-    Output_Dat = append('./Data/',Folder_sufs{i_folder},'.mat');
+%     Output_File = append('./Data/',Folder_sufs{i_folder},'.xlsx');
+%     Output_Dat = append('./Data/',Folder_sufs{i_folder},'.mat');
+    Output_File = append('./Data/sizes',Folder_sufs{i_folder},'.xlsx');
+    Output_Dat = append('./Data/sizes',Folder_sufs{i_folder},'.mat');
     disp('This is the folder that we are working on:');
     disp(Folder);
 
@@ -63,7 +65,7 @@ function populate_breakup_boolean(i_folder,Folder_sufs,wes,mus,ts)
     wel = tend; mul = tend; tl = tend;
     num_bubbles = cell(i_num,j_num,k_num); %number of bubbles
     num_t = cell(i_num,j_num,k_num); %time for the number of bubbles
-    
+    sizes = cell(i_num,j_num,k_num);
     %% Do the loop
     %% Case info (include the end time, breakup boolean, time, and number change)
     for i = i_index
@@ -106,6 +108,8 @@ function populate_breakup_boolean(i_folder,Folder_sufs,wes,mus,ts)
                         if length(find(droplet_sizes>Vc))>=2 && break_bool(i,j,k)==0 %more than 2 droplets large enough and have not recorded breakup yet
                             break_bool(i,j,k) = 1; %record breakup occurence
                             break_time(i,j,k) = (data(nw,2) - t)/te; % record breakup time
+                            Ic = find(droplet_sizes>Vc);
+                            sizes{i,j,k} = droplet_sizes(Ic);
                         end
                     end
                 end
@@ -117,7 +121,7 @@ function populate_breakup_boolean(i_folder,Folder_sufs,wes,mus,ts)
 
     %% Output files into the data subfolder
     output_xlsx(break_bool,break_time,tend,wel,mul,tl,Folder_sufs,i_folder,Output_File)
-    save(Output_Dat,'break_bool','break_time','tend','wel','mul','tl','Folder_sufs','num_bubbles','num_t')
+    save(Output_Dat,'break_bool','break_time','tend','wel','mul','tl','Folder_sufs','num_bubbles','num_t','sizes')
 
     %% Statistics info
     break_bool_probability = mean(break_bool,3); %breaup ratio

@@ -1,89 +1,81 @@
-%
+%%Note the input should be:
+%wes = [2,3,4,5,6,7,8,9,10];
+% mus = [0.01,0.1,1,10,50,100,150];
+% ts = [80,90,100,110,120,130,140,150,160,170];
 
+%if you gives wes=[3], the actual output is just we = 2 case
 
-% clear;
-function plot_breakup_nums(T,col,mar,sz,fcol,i_folder,Folder_sufs,cl,plotscatter,mul,ls)
-    filename = append(Folder_sufs{i_folder},'num.png');
-    figure(1)
-    %clf
-    muvec = T(:,1); wevec = T(:,2); probability_alpha = T(:,3);
-    mean_breakup_time = T(:,4); std_breakup_time = T(:,5);
-  d0 = 16; epsilon = 10; rhod=1; rhoc=1;
-  sigma = (2*rhoc*d0^(5/3)*epsilon^(2/3))./wevec;
-c8=1.5; c9=0.5;
-    ohvec = muvec.*mul./(sigma.*d0*rhod).^0.5;
-    vivec = (rhoc/rhod)^0.5*muvec.*mul.*(d0)^(1/3).*epsilon^(1/3)./sigma;
-    pbrvec = exp(-c8*(1+c9.*vivec)./wevec);
+function plot_breakup_nums(i_folder,Folder_sufs,wes,mus,ts)
+    %% Display info
+    disp("This is the folder that we are working on:")
+    disp(Folder_sufs{i_folder})
 
-    kk=1;
+    %% Load data
+    Output_Dat = append('./Data/',Folder_sufs{i_folder},'.mat');
+    load(Output_Dat);
+    calculate_mode = 1;
+    plot_mode = 1;
     
- for i=1:9
-        for j=1:7
-            muvecg(i,j) = muvec(kk);
-            ohvecg(i,j) = ohvec(kk);
-            wevecg(i,j) = wevec(kk);
-            vivecg(i,j) = vivec(kk);
-            pbrvecg(i,j) = pbrvec(kk);
-            if probability_alpha(kk)<0
-                probability_alpha(kk) = (i_folder~=6);
-                disp("Mu    We")
-                disp([muvec(kk),wevec(kk)])
-
+    i_num = numel(wes);
+    j_num = numel(mus);
+    k_num = numel(ts);
+    tp = cell(i_num,j_num);
+    nump = cell(i_num, j_num, k_num);
+    nump_averaged = cell(i_num,j_num);
+    
+    
+    if calculate_mode == 1
+        load(Output_Dat)
+        break_time_mean = zeros(i_num, j_num);
+        break_time_std = break_time_mean;
+        break_bool_mean = mean(break_bool, 3) > 0.5; 
+        break_bool_ratio = mean(break_bool, 3);
+        for i = 1:i_num
+            for j = 1:j_num
+                we = wes(i); mu = mus(j);  
+                [tend_min, k_min] = min(tend(i,j,:)-break_time(i,j,:));
+                t_min = num_t{i,j,k_min}-break_time(i,j,k_min);
+                tp{i,j} = t_min;
+                num_min = zeros(k_num, numel(t_min));
+                for k = 1:k_num
+                    if numel(num_t{i,j,k}) > 0
+                    [Nb, Ib] = find(num_bubbles{i,j,k}>2);
+                    num_min(k,:) = interp1(num_t{i,j,k}-break_time(i,j,k),num_bubbles{i,j,k},t_min);
+                    nump{i,j,k} = num_min(k, :);
+                    else
+                    disp([we,mu,k])
+                    end
+                end
+                nump_averaged{i,j} = mean(num_min,1);
             end
-            pgrid(i,j) = probability_alpha(kk);
-            
-            kk = kk + 1;
-            
         end
- end
-%  muvecg(end+1,:) = muvecg(end,:);
-%  ohvecg(end+1,:) = ohvecg(end,:);
-%  wevecg = [2*ones(1,numel(wevecg(1,:)));wevecg];
-%  pgrid = [-1*ones(1,numel(pgrid(1,:)));pgrid];
-
-contour(muvecg,wevecg,pgrid,[0.5 0.5],'Color',cl,'LineWidth',2,'LineStyle',ls); hold on;
-
-% contour(vivecg,wevecg,pgrid,[0.5 0.5],'Color',cl,'LineWidth',2,'LineStyle',ls); hold on;
-% contour(vivecg,wevecg,pbrvecg,[0.5 0.5],'Color','r','LineWidth',2); hold on;
-
-% colormap jet;
-if (plotscatter)
-   
-    s = scatter(muvec,wevec,sz,'filled','Marker',mar, ...
-        'MarkerFaceColor',fcol,'MarkerEdgeColor',col,'MarkerEdgeAlpha',1);
-
-  
-    s.AlphaData = probability_alpha';
-    s.MarkerFaceAlpha = 'flat';
-%     s.MarkerEdgeAlpha = 'flat';
+        save(Output_Dat,'nump','tp','nump_averaged','-append')
+    end
     
-    gscale = 1:-0.01:0;
-    mapcustom = [gscale', gscale',gscale'];
-    colormap(mapcustom);
-    c = colorbar;
-    caxis([0, 1]);
-    c.Label.String = 'Breakage Probability';
+    
+    
+    if plot_mode == 1
+        lineshape = {'k-','b-','r-','g-','c-','m-','y-'};
+        close
+        for i = 1:i_num
+            close
+            for j = 1:j_num
+            plot(tp{i,j},nump_averaged{i,j},lineshape{j},'LineWidth',2);hold on;
+            end
+            %legend('$\mu_r=0.01$','$\mu_r=0.1$','$\mu_r=1$', ...
+            %'$\mu_r=10$','$\mu_r=50$','$\mu_r=100$', '$\mu_r=500$',...
+            %'Interpreter','latex','Location','northeastoutside')
+        
+            xlabel('t/t_c','Interpreter','tex');
+            ylabel('N','Interpreter','tex');
+            title(strcat('We=',num2str(wes(i))))
+            set(gcf,'Color','w');
+            set(gca,'FontSize',16);
+            set(gcf,'units','centimeters');
+            set(gcf,'position',[5,5,20,12])
+            imagename = append(Folder_sufs{i_folder},'We',num2str(wes(i)),'num','.jpg');
+            saveas(gcf, imagename);
+        end
+    end
+
 end
-%     s.AlphaData = 1;
-% legend('Re 55 L8','Location','northeast');
-
-legend(append(Folder_sufs{i_folder},' '),'Location','northeast');
-% legend('Re 150 L9','Location','northeast');
-
-xlabel('$\mu_r$','Interpreter','latex');
-% xlabel('Oh','Interpreter','latex');
-% xlabel('Vi','Interpreter','latex');
-
-ylabel('We');
-set(gcf,'Color','w');
-set(gca,'FontSize',20);
-axis([0 300 0 12]);
-set(gcf,'Position',[318    82   782   732]);
-  set(gca,'XScale','log');
-% filename = sprintf('Re38L8.png');
-export_fig(filename);
-end
-
-
-
-
