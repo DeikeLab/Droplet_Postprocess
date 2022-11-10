@@ -1,15 +1,8 @@
-% To calculate the break-up time
-% Break-up criterion: produce a droplet larger than 4dx^3 or 8dx^3
-% Problem solved: inconsistency between break-up time and diameter tree
+%% To plot the breakup ratio
+%This is a function to call other plotter functions
 
-%Date:10/12/2022
-%Coder: Zehua Liu
-%Revised based on mu_ratio_loop77L9.m by Palas(https://drive.google.com/file/d/1WaAh1hZZ2KA9jLIE7tbjY9czPxhsATrP/view?usp=sharing)
 
-%Data structure in every dat file
-%Computational step// Physical time// Droplet id// 
-%Droplet volume//  Mass center position x,y,z//  Droplet area//
-%Note that there is no order in the subdroplets 
+
 clear;
 figure(1)
 clf;
@@ -17,12 +10,10 @@ figure(2)
 clf;
 % plot(NaN,NaN,'k--'); hold on;
 % plot(NaN,NaN,'k-');
-%% Test mode
-Test_mode = 0; % 1 -- Run the simulation for a single case 0 -- Loop for all cases
 
 %% Folder that we are working on
 i_folder = 5;
-Folder_sufs = {'Re38L8','Re38L9','Re55L8','Re77L8','Re77L9','150L9'};
+Folder_sufs = {'Re38L8','Re38L9','Re55L8','Re55L9','Re77L8','Re77L9','Re150L9'};
 
 % populate_breakup_boolean(i_folder,Folder_sufs,[2,3,4,5,6,7,8,9,10], ...
 %     [0.01,0.1,1,10,50,100,150], ...
