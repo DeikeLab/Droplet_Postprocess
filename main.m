@@ -1,4 +1,5 @@
-addpath('C:\Users\16092\Documents\0Princeton\5Code\github_repo')
+%% Add path for the export_fig function
+addpath('.\FigureExport_GithubRepo')
 
 %% Foldername
 Folder_sufs = {'Re38L8','Re38L9','Re55L8','Re55L9','Re77L8','Re77L9','Re150L9'};
