@@ -3,7 +3,7 @@ addpath('.\FigureExport_GithubRepo')
 addpath('.\SmallFunctions\')
 
 %% Task
-task = 3.5;
+task = 1.5;
 
 %% Foldername
 Folder_sufs = {'Re38L8','Re38L9','Re55L8','Re55L9','Re77L8','Re77L9','Re150L9'};
@@ -30,13 +30,14 @@ end
 if task == 1.5
 cls = {'k','k','b','b','r','r','m'};
 lines = {'--','-','--','-','--','-','-'};
-for i_folder = 1:numel(Folder_sufs)
+for i_folder = 7
+    %1:numel(Folder_sufs)
     close all
     data = readtable(append('.\Data\',Folder_sufs{i_folder},'.xlsx'),'Sheet',2);
     T = table2array(data);
     plot_breakup_boolean(T,'k','o',200,'k',i_folder,Folder_sufs,'k',1,1.8,'-');
 end
-legend(Folder_sufs)
+legend(Folder_sufs{i_folder})
 end
 
 

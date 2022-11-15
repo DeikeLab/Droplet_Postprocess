@@ -2,7 +2,7 @@
 
 
 function plot_breakup_boolean(T,col,mar,sz,fcol,i_folder,Folder_sufs,cl,plotscatter,mul,ls)
-    filename = append('.\Images\',Folder_sufs{i_folder},'oh.png');
+    filename = append('.\Images\',Folder_sufs{i_folder},'mu.png');
     figure(1)
     %clf
     muvec = T(:,1); wevec = T(:,2); probability_alpha = T(:,3);
@@ -26,7 +26,7 @@ function plot_breakup_boolean(T,col,mar,sz,fcol,i_folder,Folder_sufs,cl,plotscat
             vivecg(i,j) = vivec(kk);
             pbrvecg(i,j) = pbrvec(kk);
             if probability_alpha(kk)<0
-                probability_alpha(kk) = (i_folder~=6);
+                probability_alpha(kk) = (i_folder~=6) & (i~=1); 
                 disp("Mu    We")
                 disp([muvec(kk),wevec(kk)])
 
@@ -44,8 +44,8 @@ function plot_breakup_boolean(T,col,mar,sz,fcol,i_folder,Folder_sufs,cl,plotscat
 %  wevecg = [2*ones(1,numel(wevecg(1,:)));wevecg];
 %  pgrid = [-1*ones(1,numel(pgrid(1,:)));pgrid];
 
-%contour(muvecg,wevecg,pgrid,[0.5 0.5],'Color',cl,'LineWidth',2,'LineStyle',ls); hold on;
-contour(ohvecg,wevecg,pgrid,[0.5 0.5],'Color',cl,'LineWidth',2,'LineStyle',ls); hold on;
+contour(muvecg,wevecg,pgrid,[0.5 0.5],'Color',cl,'LineWidth',2,'LineStyle',ls); hold on;
+%contour(ohvecg,wevecg,pgrid,[0.5 0.5],'Color',cl,'LineWidth',2,'LineStyle',ls); hold on;
 
 % contour(vivecg,wevecg,pgrid,[0.5 0.5],'Color',cl,'LineWidth',2,'LineStyle',ls); hold on;
 % contour(vivecg,wevecg,pbrvecg,[0.5 0.5],'Color','r','LineWidth',2); hold on;
@@ -53,10 +53,10 @@ contour(ohvecg,wevecg,pgrid,[0.5 0.5],'Color',cl,'LineWidth',2,'LineStyle',ls); 
 % colormap jet;
 if (plotscatter)
    
-%     s = scatter(muvec,wevec,sz,'filled','Marker',mar, ...
-%         'MarkerFaceColor',fcol,'MarkerEdgeColor',col,'MarkerEdgeAlpha',1);
-    s = scatter(ohvec,wevec,sz,'filled','Marker',mar, ...
+    s = scatter(muvec,wevec,sz,'filled','Marker',mar, ...
         'MarkerFaceColor',fcol,'MarkerEdgeColor',col,'MarkerEdgeAlpha',1);
+%     s = scatter(ohvec,wevec,sz,'filled','Marker',mar, ...
+%         'MarkerFaceColor',fcol,'MarkerEdgeColor',col,'MarkerEdgeAlpha',1);
 
   
     s.AlphaData = probability_alpha';
@@ -76,8 +76,8 @@ end
 legend(append(Folder_sufs{i_folder},' '),'Location','northeast');
 % legend('Re 150 L9','Location','northeast');
 
-%xlabel('$\mu_r$','Interpreter','latex');
-xlabel('Oh','Interpreter','latex');
+xlabel('$\mu_r$','Interpreter','latex');
+%xlabel('Oh','Interpreter','latex');
 % xlabel('Vi','Interpreter','latex');
 
 ylabel('We');
@@ -87,6 +87,7 @@ axis([0 300 0 12]);
 set(gcf,'Position',[318    82   782   732]);
 set(gca,'XScale','log');
 % filename = sprintf('Re38L8.png');
+filename
 export_fig(filename);
 end
 
